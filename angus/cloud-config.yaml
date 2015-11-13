@@ -12,7 +12,7 @@ rancher:
       eth*:
         dhcp: false
       eth0:
-        address: 192.168.3.33/24
+        address: 192.168.3.34/24
         gateway: 192.168.3.1
         mtu: 1500
     dns:
