@@ -1,0 +1,40 @@
+#cloud-config
+ssh_authorized_keys:
+- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGn2z8vTRFJSmpJxECtA5RnG4uml2QKjnqnAE57Tyjr/NeyR0yOArtnxI2pjh61U02dspkbKrSL9lAFLeuPHWY8JB5TMZY0jPsV40UDBEFlOvbnHXam+yGBwbnmrDr9oaTh0ds3tZVyUQk50BGRCauKrzu7JBYj1Zd3DKL2RcjFxWSIZbT2gxgGjP1Jz2KHYhIQlgxlEvisWt8cudj/XaTtRVgLdJnTjikl9RevzNX3b7QNZVPsL7oYazMRpzCy0NX1Yrc08e4L7K0KgnGN+/BckSTu+mlAo5wjx1isxCEP6ro5B7O9TzQ3pJNtw0HS8rq0/B1YDGOXHQuPrbM0p7h
+hostname: angus
+
+# NFS Mount
+rancher:
+  services_include:
+    ubuntu-console: true
+  network:
+    interfaces:
+      eth*:
+        dhcp: false
+      eth0:
+        address: 192.168.3.33/24
+        gateway: 192.168.3.1
+        mtu: 1500
+    dns:
+      nameservers:
+        - 8.8.8.8
+        - 8.8.4.4
+
+write_files:
+  # /opt/rancher/bin/start.sh is executed on start before User Docker starts
+  # /etc/rc.local is also executed on start but not guaranteed to be ran before User Docker
+  - path: /opt/rancher/bin/start.sh
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      if ! dpkg -l | grep -q nfs-common; then
+        apt-get update -qq && apt-get install -y nfs-common
+      fi
+      rpcbind
+      mkdir -p /mnt/readynas
+      mkdir -p /mnt/media
+      mkdir -p /mnt/security-archive
+      mount -t nfs 192.168.3.23:/media /mnt/readynas
+      mount -t cifs //192.168.3.11/media /mnt/media -o username=guest,uid=rancher
+      mount -t cifs //192.168.3.11/security-archive /mnt/security-archive -o username=guest,uid=rancher
