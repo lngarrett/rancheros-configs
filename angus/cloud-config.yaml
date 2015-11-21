@@ -17,6 +17,7 @@ rancher:
         mtu: 1500
     dns:
       nameservers:
+        - 192.168.3.34
         - 8.8.8.8
         - 8.8.4.4
 
