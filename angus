@@ -37,5 +37,6 @@ write_files:
       mkdir -p /mnt/media
       mkdir -p /mnt/security-archive
       mount -t nfs 192.168.3.23:/media /mnt/readynas
-      mount -t cifs //192.168.3.11/media /mnt/media -o username=guest,uid=rancher
-      mount -t cifs //192.168.3.11/security-archive /mnt/security-archive -o username=guest,uid=rancher
+      mount -t cifs //192.168.3.11/media /mnt/media -o username=nas,uid=rancher,password=nas
+      mount -t cifs //192.168.3.11/security-archive /mnt/security-archive -o username=nas,uid=rancher,password=nas
+
